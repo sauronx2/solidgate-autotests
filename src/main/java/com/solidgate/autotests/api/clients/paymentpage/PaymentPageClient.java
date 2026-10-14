@@ -20,8 +20,17 @@ public class PaymentPageClient extends AbstractSolidgateClient {
                 .post(INIT_PAYMENT_PAGE_URL);
     }
 
+    public HttpResponseWrapper sendDeactivatePaymentPageRequest(DeactivatePaymentPageRequestDto requestDto) {
+        var baseUri = current().paymentPageUrl();
+
+        return getSignedAndLoggedClient(baseUri)
+                .body(toJson(requestDto))
+                .post(DEACTIVATE_PAYMENT_PAGE_URL);
+    }
+
     @NoArgsConstructor(access = PRIVATE)
     static class PaymentPageResource {
         static final String INIT_PAYMENT_PAGE_URL = "/init";
+        static final String DEACTIVATE_PAYMENT_PAGE_URL = "/deactivate";
     }
 }

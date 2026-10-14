@@ -11,7 +11,9 @@ sandbox card, and verified on the success page and through `/status`.
 | `PaidOrderStatusMatchesPaymentPageTest` | `/status` of the paid order returns the amount and currency displayed on the Payment Page, `order.status = auth_ok`, the authorized amount equals the order amount, and the order holds exactly one successful `auth` transaction |
 
 Every test creates and pays its own order in the sandbox; the amount and currency are read from the Payment Page
-itself, not from the request that created it.
+itself, not from the request that created it. After each test the created Payment Page is deactivated through
+`/deactivate`, so a test that stops before the payment does not leave an open page behind. A page that was already
+paid cannot be deactivated; that outcome is logged and never fails the test.
 
 ## Stack
 
@@ -54,9 +56,9 @@ documentation; the `merchant` and `signature` headers are redacted from logs and
 ## Report
 
 The Gradle HTML report is written to `build/reports/tests/test/index.html` after every run. The page of each test
-holds its console output: every request and response of `/init` and `/status` with the `merchant` and `signature`
-headers masked. A failed test saves a screenshot and the page source to `build/reports/tests/`; the paths are printed
-in the failure output.
+holds its console output: every request and response of `/init`, `/status` and `/deactivate` with the `merchant`
+and `signature` headers masked. A failed test saves a screenshot and the page source to `build/reports/tests/`; the
+paths are printed in the failure output.
 
 ## Project map
 
@@ -64,7 +66,7 @@ in the failure output.
 src/main/java/com/solidgate/autotests/
   config/                  SolidgateConfig: keys and URLs from system properties, environment, .env
   api/restassuredclient/   REST Assured client factory, request signature filter, masked request log, response wrapper
-  api/clients/             one HTTP call per endpoint: paymentpage (/init), cardpayments (/status)
+  api/clients/             one HTTP call per endpoint: paymentpage (/init, /deactivate), cardpayments (/status)
   api/controllers/         API steps on top of the clients, /status polling until a terminal status
   models/api/              request and response DTOs per endpoint
   models/entities/         MoneyEntity (minor units + ISO currency), CardEntity
@@ -76,6 +78,6 @@ src/main/java/com/solidgate/autotests/
 src/test/java/com/solidgate/autotests/
   runners/                 CardPaymentTestSuite, the entry point of the Gradle test task
   tests/                   AbstractTestRunner: browser configuration and teardown
-  tests/cardpayment/       AbstractCardPaymentTestRunner (create, open, pay) and the two tests
+  tests/cardpayment/       AbstractCardPaymentTestRunner (create, open, pay, deactivate) and the two tests
   extensions/              screenshot and page source on a failed test
 ```

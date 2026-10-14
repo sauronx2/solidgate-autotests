@@ -1,5 +1,7 @@
 package com.solidgate.autotests.tests.cardpayment;
 
+import com.solidgate.autotests.models.api.paymentpage.requests.*;
+import com.solidgate.autotests.models.entities.*;
 import org.junit.jupiter.api.*;
 
 import static com.solidgate.autotests.models.enums.PaymentStatus.*;
@@ -10,6 +12,9 @@ import static com.solidgate.autotests.utils.MoneyUtils.*;
 import static org.assertj.core.api.SoftAssertions.*;
 
 public class SuccessfulCardPaymentShowsSuccessPageTest extends AbstractCardPaymentTestRunner {
+
+    private InitPaymentPageRequestDto initPaymentPageRequestDto;
+    private CardEntity card;
 
     @BeforeEach
     void prepareDefaultOrderAndSuccessfulPaymentCard() {

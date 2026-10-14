@@ -26,4 +26,19 @@ public class PaymentPageController {
 
         return initResponse;
     }
+
+    public HttpResponseWrapper deactivatePaymentPage(String paymentPageId) {
+        var requestDto = new DeactivatePaymentPageRequestDto(paymentPageId);
+        var deactivateResponse = paymentPageClient
+                .sendDeactivatePaymentPageRequest(requestDto)
+                .expectStatusCode(HTTP_OK);
+        var deactivateError = deactivateResponse
+                .getBodyAs(DeactivatePaymentPageResponseDto.class)
+                .getError();
+        if (nonNull(deactivateError)) {
+            throw new FrameworkException("Payment page deactivate request failed: " + deactivateError);
+        }
+
+        return deactivateResponse;
+    }
 }
